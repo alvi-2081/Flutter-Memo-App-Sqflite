@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:notes_clone/class/notes.dart';
 import 'package:notes_clone/main.dart';
 import 'package:notes_clone/screen/pdfpreview.dart';
+import 'package:notes_clone/screen/search.dart';
 import 'package:provider/provider.dart';
 
 class MyDrawer extends StatelessWidget {
@@ -55,6 +56,20 @@ class MyDrawer extends StatelessWidget {
                     () => Navigator.pushReplacement(context,
                             MaterialPageRoute(builder: (context) {
                           return Home();
+                        })),
+                    10,
+                    8,
+                    10,
+                    8),
+                drawerButton(
+                    context,
+                    Icons.search,
+                    "Search",
+                    () => Navigator.pushReplacement(context,
+                            MaterialPageRoute(builder: (context) {
+                          return Search(
+                            noteProvider: noteProvider,
+                          );
                         })),
                     10,
                     8,

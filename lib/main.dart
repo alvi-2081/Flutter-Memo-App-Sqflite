@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:notes_clone/class/notes.dart';
 import 'package:notes_clone/screen/handling_note.dart';
 import 'package:notes_clone/screen/home.dart';
+import 'package:notes_clone/screen/search.dart';
 import 'package:notes_clone/widgets/drawer.dart';
 import 'package:provider/provider.dart';
 

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:ffi';
 import 'package:flutter/material.dart';
 import 'package:notes_clone/class/database.dart';
 
@@ -40,6 +41,7 @@ class Note {
 
 class NoteProvider with ChangeNotifier {
   List<Map<String, dynamic>> _allNotes = [];
+  List<Map<String, dynamic>> _allSearchedNotes = [];
 
   var db = NotesDBHandler();
 
@@ -47,11 +49,24 @@ class NoteProvider with ChangeNotifier {
     return _allNotes;
   }
 
+  List<Map<String, dynamic>> get allSearchedNotes {
+    return _allSearchedNotes;
+  }
+
   Future<void> getAllNotes() async {
     // queries for all the notes from the database ordered by latest edited note. excludes archived notes.
 
     this._allNotes = await db.selectAllNotes();
     print("all notes: $_allNotes");
+  }
+
+  Future<void> getSearchedNotes(
+      String person, int startDate, int endDate) async {
+    // queries for all the notes from the database ordered by latest edited note. excludes archived notes.
+
+    this._allSearchedNotes =
+        await db.selectSearchedNotes(person, startDate, endDate);
+    print("all Searched notes: $_allSearchedNotes");
   }
 
   Future<void> createNote(Note _currNote) async {

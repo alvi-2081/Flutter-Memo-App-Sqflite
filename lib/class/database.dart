@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqlite_api.dart';
@@ -114,11 +116,35 @@ class NotesDBHandler {
     return data;
   }
 
-  // Future<List<Map<String, dynamic>>> selectAllArchivedNotes() async {
-  //   final Database db = await database;
-  //   // query all the notes sorted by last edited
-  //   var data = await db.query(tableName,
-  //       orderBy: "dateTime", where: "is_archived = ?", whereArgs: [1]);
-  //   return data;
-  // }
+  Future<List<Map<String, dynamic>>> selectSearchedNotes(
+      String person, int startDate, int endDate) async {
+    final Database db = await database;
+    var data;
+    // query all the notes sorted by last edited
+    if (startDate == endDate) {
+      print(startDate);
+      print("object");
+      data = await db.query(tableName,
+          orderBy: "dateTime",
+          where: "person LIKE ? AND dateTime >= ? ",
+          whereArgs: [
+            "$person",
+            startDate,
+          ]);
+    } else if (startDate <= endDate) {
+      print(startDate);
+      print(endDate);
+      print("object");
+      data = await db.query(tableName,
+          orderBy: "dateTime",
+          where: "person LIKE ? AND dateTime <= ? ",
+          whereArgs: [
+            "$person",
+            endDate,
+          ]);
+    }
+    return data;
+    // print(data);
+    // return data;
+  }
 }
