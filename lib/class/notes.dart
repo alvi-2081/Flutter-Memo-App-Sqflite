@@ -67,6 +67,7 @@ class NoteProvider with ChangeNotifier {
     this._allSearchedNotes =
         await db.selectSearchedNotes(person, startDate, endDate);
     print("all Searched notes: $_allSearchedNotes");
+    notifyListeners();
   }
 
   Future<void> createNote(Note _currNote) async {

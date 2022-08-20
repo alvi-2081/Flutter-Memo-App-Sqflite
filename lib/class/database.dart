@@ -119,32 +119,9 @@ class NotesDBHandler {
   Future<List<Map<String, dynamic>>> selectSearchedNotes(
       String person, int startDate, int endDate) async {
     final Database db = await database;
-    var data;
-    // query all the notes sorted by last edited
-    if (startDate == endDate) {
-      print(startDate);
-      print("object");
-      data = await db.query(tableName,
-          orderBy: "dateTime",
-          where: "person LIKE ? AND dateTime >= ? ",
-          whereArgs: [
-            "$person",
-            startDate,
-          ]);
-    } else if (startDate <= endDate) {
-      print(startDate);
-      print(endDate);
-      print("object");
-      data = await db.query(tableName,
-          orderBy: "dateTime",
-          where: "person LIKE ? AND dateTime <= ? ",
-          whereArgs: [
-            "$person",
-            endDate,
-          ]);
-    }
+    var data = db.rawQuery(
+      ''' SELECT * FROM $tableName WHERE person LIKE '$person' AND dateTime BETWEEN '$startDate' AND '$endDate' ''',
+    );
     return data;
-    // print(data);
-    // return data;
   }
 }

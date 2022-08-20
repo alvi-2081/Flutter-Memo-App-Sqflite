@@ -1,11 +1,9 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:notes_clone/class/notes.dart';
 import 'package:notes_clone/screen/handling_note.dart';
 import 'package:notes_clone/widgets/drawer.dart';
-import 'package:notes_clone/widgets/notes_list.dart';
 import 'package:provider/provider.dart';
 
 class Search extends StatefulWidget {
@@ -41,10 +39,10 @@ class _SearchState extends State<Search> {
               if (_searchQueryController.text.isNotEmpty) {
                 setState(() {
                   _searched = !_searched;
-                  handlesearch(startDate.millisecondsSinceEpoch ~/ 1000,
+                  widget.noteProvider.getSearchedNotes(
+                      _searchQueryController.text.toString(),
+                      startDate.millisecondsSinceEpoch ~/ 1000,
                       endDate.millisecondsSinceEpoch ~/ 1000);
-                  // widget.noteProvider
-                  //     .getSearchedNotes(_searchQueryController.text.toString(),);
 
                   print(_searchQueryController.text.toString());
                 });
@@ -56,22 +54,8 @@ class _SearchState extends State<Search> {
             ));
   }
 
-  handlesearch(int start, int end) {
-    if (start <= end) {
-      print("if after ${start <= end}");
-      print("${start == end}");
-
-      widget.noteProvider
-          .getSearchedNotes(_searchQueryController.text.toString(), start, end);
-    } else {
-      print("invalid dates supplied");
-    }
-  }
-
-  List<Map<String, dynamic>> _notes = [];
   @override
   Widget build(BuildContext context) {
-    _notes = widget.noteProvider.allSearchedNotes;
     return Scaffold(
         drawer: Consumer<NoteProvider>(
             builder: (_, noteProvider, __) =>
@@ -90,7 +74,7 @@ class _SearchState extends State<Search> {
                   color: Colors.white,
                   child: Padding(
                     padding:
-                        EdgeInsets.symmetric(horizontal: 20.0, vertical: 3),
+                        EdgeInsets.symmetric(horizontal: 20.0, vertical: 0),
                     child: TextField(
                       controller: _searchQueryController,
                       // autofocus: true,
@@ -103,6 +87,10 @@ class _SearchState extends State<Search> {
                       style: TextStyle(color: Colors.indigo, fontSize: 16.0),
                     ),
                   ),
+                ),
+                Container(
+                  height: 1,
+                  color: Colors.indigo,
                 ),
                 Container(
                   color: Colors.white,
@@ -119,7 +107,7 @@ class _SearchState extends State<Search> {
                             style: TextStyle(
                                 // fontSize: 12,
                                 fontWeight: FontWeight.bold,
-                                color: Color.fromARGB(255, 118, 118, 118)),
+                                color: Colors.indigo),
                           ),
                           subtitle: Text(
                             "${DateFormat.yMMMd().format(startDate)}",
@@ -130,12 +118,13 @@ class _SearchState extends State<Search> {
                               },
                               icon: Icon(
                                 Icons.date_range,
-                                color: Color.fromARGB(255, 118, 118, 118),
+                                color: Colors.indigo,
                               )),
                         ),
                       ),
                       Expanded(
                         child: ListTile(
+                          dense: true,
                           onTap: () {
                             _endDate(context);
                           },
@@ -143,7 +132,7 @@ class _SearchState extends State<Search> {
                             'End Date:',
                             style: TextStyle(
                                 fontWeight: FontWeight.bold,
-                                color: Color.fromARGB(255, 118, 118, 118)),
+                                color: Colors.indigo),
                           ),
                           subtitle: Text(
                             "${DateFormat.yMMMd().format(endDate)}",
@@ -154,7 +143,7 @@ class _SearchState extends State<Search> {
                               },
                               icon: Icon(
                                 Icons.date_range,
-                                color: Color.fromARGB(255, 118, 118, 118),
+                                color: Colors.indigo,
                               )),
                         ),
                       ),
@@ -168,10 +157,10 @@ class _SearchState extends State<Search> {
         body: Consumer<NoteProvider>(
             builder: (context, noteProvider, __) => _searched
                 ? Container(
-                    child: _notes.isEmpty
+                    child: widget.noteProvider.allSearchedNotes.isEmpty
                         ? Center(
                             child: Text(
-                              "No Mamos found, search again.",
+                              "No Memos found, search again.",
                               style: TextStyle(
                                   fontWeight: FontWeight.bold, fontSize: 20),
                             ),
@@ -213,10 +202,14 @@ class _SearchState extends State<Search> {
                                                     color: Colors.indigo,
                                                   ),
                                                   child: Text(
-                                                    utf8.decode(_notes[
-                                                        _notes.length -
-                                                            index -
-                                                            1]['title']),
+                                                    utf8.decode(widget
+                                                        .noteProvider
+                                                        .allSearchedNotes[widget
+                                                            .noteProvider
+                                                            .allSearchedNotes
+                                                            .length -
+                                                        index -
+                                                        1]['title']),
                                                     style: TextStyle(
                                                         color: Colors.white,
                                                         fontWeight:
@@ -234,7 +227,11 @@ class _SearchState extends State<Search> {
                                             margin:
                                                 EdgeInsets.fromLTRB(0, 0, 0, 6),
                                             child: Text(
-                                              utf8.decode(_notes[_notes.length -
+                                              utf8.decode(widget.noteProvider
+                                                  .allSearchedNotes[widget
+                                                      .noteProvider
+                                                      .allSearchedNotes
+                                                      .length -
                                                   index -
                                                   1]['content']),
                                               maxLines: 25,
@@ -261,7 +258,7 @@ class _SearchState extends State<Search> {
                                                       ),
                                                     ),
                                                     Text(
-                                                      "${DateFormat.yMMMd().format(DateTime.fromMillisecondsSinceEpoch(_notes[_notes.length - index - 1]['dateTime'] * 1000))}",
+                                                      "${DateFormat.yMMMd().format(DateTime.fromMillisecondsSinceEpoch(widget.noteProvider.allSearchedNotes[widget.noteProvider.allSearchedNotes.length - index - 1]['dateTime'] * 1000))}",
                                                       style: TextStyle(
                                                         color: Colors.indigo,
                                                         decoration:
@@ -301,10 +298,13 @@ class _SearchState extends State<Search> {
                                                 ),
                                               ),
                                               Text(
-                                                utf8.decode(_notes[
-                                                    _notes.length -
-                                                        index -
-                                                        1]['tag']),
+                                                utf8.decode(widget.noteProvider
+                                                    .allSearchedNotes[widget
+                                                        .noteProvider
+                                                        .allSearchedNotes
+                                                        .length -
+                                                    index -
+                                                    1]['tag']),
                                                 style: TextStyle(
                                                   color: Colors.indigo,
                                                   decoration:
@@ -323,10 +323,13 @@ class _SearchState extends State<Search> {
                                                 ),
                                               ),
                                               Text(
-                                                utf8.decode(_notes[
-                                                    _notes.length -
-                                                        index -
-                                                        1]['person']),
+                                                utf8.decode(widget.noteProvider
+                                                    .allSearchedNotes[widget
+                                                        .noteProvider
+                                                        .allSearchedNotes
+                                                        .length -
+                                                    index -
+                                                    1]['person']),
                                                 style: TextStyle(
                                                   color: Colors.indigo,
                                                   decoration:
@@ -350,32 +353,61 @@ class _SearchState extends State<Search> {
                                         MaterialPageRoute(builder: (context) {
                                           return HandleNote(
                                             currNote: Note(
-                                              id: _notes[_notes.length -
+                                              id: widget.noteProvider
+                                                  .allSearchedNotes[widget
+                                                      .noteProvider
+                                                      .allSearchedNotes
+                                                      .length -
                                                   index -
                                                   1]['id'],
-                                              title: utf8.decode(_notes[
-                                                      _notes.length - index - 1]
-                                                  ['title']),
-                                              tag: utf8.decode(_notes[
-                                                      _notes.length - index - 1]
-                                                  ['tag']),
-                                              person: utf8.decode(_notes[
-                                                      _notes.length - index - 1]
-                                                  ['person']),
-                                              note: utf8.decode(_notes[
-                                                      _notes.length - index - 1]
-                                                  ['content']),
+                                              title: utf8.decode(widget
+                                                  .noteProvider
+                                                  .allSearchedNotes[widget
+                                                      .noteProvider
+                                                      .allSearchedNotes
+                                                      .length -
+                                                  index -
+                                                  1]['title']),
+                                              tag: utf8.decode(widget
+                                                  .noteProvider
+                                                  .allSearchedNotes[widget
+                                                      .noteProvider
+                                                      .allSearchedNotes
+                                                      .length -
+                                                  index -
+                                                  1]['tag']),
+                                              person: utf8.decode(widget
+                                                  .noteProvider
+                                                  .allSearchedNotes[widget
+                                                      .noteProvider
+                                                      .allSearchedNotes
+                                                      .length -
+                                                  index -
+                                                  1]['person']),
+                                              note: utf8.decode(widget
+                                                  .noteProvider
+                                                  .allSearchedNotes[widget
+                                                      .noteProvider
+                                                      .allSearchedNotes
+                                                      .length -
+                                                  index -
+                                                  1]['content']),
                                               dateTime: DateTime
-                                                  .fromMillisecondsSinceEpoch(
-                                                      _notes[_notes.length -
-                                                              index -
-                                                              1]['dateTime'] *
-                                                          1000),
+                                                  .fromMillisecondsSinceEpoch(widget
+                                                          .noteProvider
+                                                          .allSearchedNotes[widget
+                                                              .noteProvider
+                                                              .allSearchedNotes
+                                                              .length -
+                                                          index -
+                                                          1]['dateTime'] *
+                                                      1000),
                                             ),
                                           );
                                         }),
                                       );
-                                      print(_notes);
+                                      print(
+                                          widget.noteProvider.allSearchedNotes);
                                     },
                                     child: new Container(
                                       padding: const EdgeInsets.all(10.0),
@@ -392,7 +424,8 @@ class _SearchState extends State<Search> {
                                 ),
                               ]);
                             },
-                            itemCount: _notes.length,
+                            itemCount:
+                                widget.noteProvider.allSearchedNotes.length,
                           ))
                 : Center(
                     child: Text(
