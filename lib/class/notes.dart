@@ -70,6 +70,11 @@ class NoteProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> clearSearched() async {
+    this._allSearchedNotes = [];
+    notifyListeners();
+  }
+
   Future<void> createNote(Note _currNote) async {
     await db.insertNote(
       _currNote,

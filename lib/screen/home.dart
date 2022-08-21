@@ -122,7 +122,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                               ),
                                             ),
                                             Text(
-                                              "${DateFormat.yMMMd().format(DateTime.fromMillisecondsSinceEpoch(_notes[_notes.length - index - 1]['dateTime'] * 1000))}",
+                                              "${DateTime.fromMillisecondsSinceEpoch(_notes[_notes.length - index - 1]['dateTime'] * 1000).day}/${DateTime.fromMillisecondsSinceEpoch(_notes[_notes.length - index - 1]['dateTime'] * 1000).month}/${DateTime.fromMillisecondsSinceEpoch(_notes[_notes.length - index - 1]['dateTime'] * 1000).year}",
+                                              // "${DateTime.fromMillisecondsSinceEpoch(_notes[_notes.length - index - 1]['dateTime'] * 1000).day}",
                                               style: TextStyle(
                                                 color: Colors.indigo,
                                                 decoration:

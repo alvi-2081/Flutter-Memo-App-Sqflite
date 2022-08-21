@@ -159,7 +159,7 @@ class _HandleNoteState extends State<HandleNote> {
                         color: Color.fromARGB(255, 118, 118, 118)),
                   ),
                   subtitle: Text(
-                    "${DateFormat.yMMMd().format(selectedDate)}",
+                    "${selectedDate.day}/${selectedDate.month}/${selectedDate.year}",
                   ),
                   trailing: IconButton(
                       onPressed: () {

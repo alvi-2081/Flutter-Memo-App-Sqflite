@@ -81,7 +81,8 @@ class MyDrawer extends StatelessWidget {
                     "Export",
                     () => Navigator.push(context,
                             MaterialPageRoute(builder: (context) {
-                          return PdfPreviewPage(noteProvider: noteProvider);
+                          return PdfPreviewPage(
+                              dataList: noteProvider.allNotes);
                         })),
                     10,
                     8,

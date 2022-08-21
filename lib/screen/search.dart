@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:notes_clone/class/notes.dart';
 import 'package:notes_clone/screen/handling_note.dart';
+import 'package:notes_clone/screen/pdfpreview.dart';
 import 'package:notes_clone/widgets/drawer.dart';
 import 'package:provider/provider.dart';
 
@@ -15,47 +16,54 @@ class Search extends StatefulWidget {
 }
 
 class _SearchState extends State<Search> {
+  // List<Map<String, dynamic>> get allSearchedNotes {
+  //   return widget.noteProvider.allSearchedNotes;
+  // }
+
   TextEditingController _searchQueryController = TextEditingController();
 
   bool _searched = false;
 
   DateTime startDate = DateTime.now();
   DateTime endDate = DateTime.now();
-  search_icon() {
-    return _searched
-        ? InkWell(
-            onTap: () {
-              setState(() {
-                _searched = !_searched;
-              });
-              _searchQueryController.clear();
-            },
-            child: Icon(
-              Icons.cancel_outlined,
-              color: Colors.indigo,
-            ))
-        : InkWell(
-            onTap: () {
-              if (_searchQueryController.text.isNotEmpty) {
-                setState(() {
-                  _searched = !_searched;
-                  widget.noteProvider.getSearchedNotes(
-                      _searchQueryController.text.toString(),
-                      startDate.millisecondsSinceEpoch ~/ 1000,
-                      endDate.millisecondsSinceEpoch ~/ 1000);
+  // search_icon() {
+  //   return _searched
+  //       ? InkWell(
+  //           onTap: () {
+  //             setState(() {
+  //               _searched = !_searched;
+  //             });
 
-                  print(_searchQueryController.text.toString());
-                });
-              }
-            },
-            child: Icon(
-              Icons.search,
-              color: Colors.indigo,
-            ));
-  }
+  //             _searchQueryController.clear();
+  //           },
+  //           child: Icon(
+  //             Icons.cancel_outlined,
+  //             color: Colors.indigo,
+  //           ))
+  //       : InkWell(
+  //           onTap: () {
+  //             if (_searchQueryController.text.isNotEmpty) {
+  //               setState(() {
+  //                 _searched = !_searched;
+  //                 widget.noteProvider.getSearchedNotes(
+  //                     _searchQueryController.text.toString(),
+  //                     startDate.millisecondsSinceEpoch ~/ 1000,
+  //                     endDate.millisecondsSinceEpoch ~/ 1000);
+
+  //                 print(_searchQueryController.text.toString());
+  //               });
+  //             }
+  //           },
+  //           child: Icon(
+  //             Icons.search,
+  //             color: Colors.indigo,
+  //           ));
+  // }
 
   @override
   Widget build(BuildContext context) {
+    final provider = Provider.of<NoteProvider>(context);
+    List<Map<String, dynamic>> note = widget.noteProvider.allSearchedNotes;
     return Scaffold(
         drawer: Consumer<NoteProvider>(
             builder: (_, noteProvider, __) =>
@@ -79,7 +87,41 @@ class _SearchState extends State<Search> {
                       controller: _searchQueryController,
                       // autofocus: true,
                       decoration: InputDecoration(
-                        suffixIcon: search_icon(),
+                        suffixIcon: _searched
+                            ? InkWell(
+                                onTap: () {
+                                  setState(() {
+                                    _searched = !_searched;
+                                  });
+                                  provider.clearSearched();
+                                  _searchQueryController.clear();
+                                },
+                                child: Icon(
+                                  Icons.cancel_outlined,
+                                  color: Colors.indigo,
+                                ))
+                            : InkWell(
+                                onTap: () {
+                                  if (_searchQueryController.text.isNotEmpty) {
+                                    setState(() {
+                                      _searched = !_searched;
+                                      widget.noteProvider.getSearchedNotes(
+                                          _searchQueryController.text
+                                              .toString(),
+                                          startDate.millisecondsSinceEpoch ~/
+                                              1000,
+                                          endDate.millisecondsSinceEpoch ~/
+                                              1000);
+
+                                      print(_searchQueryController.text
+                                          .toString());
+                                    });
+                                  }
+                                },
+                                child: Icon(
+                                  Icons.search,
+                                  color: Colors.indigo,
+                                )),
                         hintText: "Search Person",
                         border: InputBorder.none,
                         hintStyle: TextStyle(color: Colors.indigo),
@@ -154,10 +196,26 @@ class _SearchState extends State<Search> {
             ),
           ),
         ),
+        floatingActionButton: FloatingActionButton(
+          child: Icon(
+            Icons.picture_as_pdf,
+            size: 30,
+          ),
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) {
+                  return PdfPreviewPage(dataList: note);
+                },
+              ),
+            );
+          },
+        ),
         body: Consumer<NoteProvider>(
             builder: (context, noteProvider, __) => _searched
                 ? Container(
-                    child: widget.noteProvider.allSearchedNotes.isEmpty
+                    child: note.isEmpty
                         ? Center(
                             child: Text(
                               "No Memos found, search again.",
@@ -258,7 +316,8 @@ class _SearchState extends State<Search> {
                                                       ),
                                                     ),
                                                     Text(
-                                                      "${DateFormat.yMMMd().format(DateTime.fromMillisecondsSinceEpoch(widget.noteProvider.allSearchedNotes[widget.noteProvider.allSearchedNotes.length - index - 1]['dateTime'] * 1000))}",
+                                                      "${DateTime.fromMillisecondsSinceEpoch(note[note.length - index - 1]['dateTime'] * 1000).day}/${DateTime.fromMillisecondsSinceEpoch(note[note.length - index - 1]['dateTime'] * 1000).month}/${DateTime.fromMillisecondsSinceEpoch(note[note.length - index - 1]['dateTime'] * 1000).year}",
+                                                      // "${DateFormat.yMMMd().format(DateTime.fromMillisecondsSinceEpoch(widget.noteProvider.allSearchedNotes[widget.noteProvider.allSearchedNotes.length - index - 1]['dateTime'] * 1000))}",
                                                       style: TextStyle(
                                                         color: Colors.indigo,
                                                         decoration:
@@ -406,8 +465,7 @@ class _SearchState extends State<Search> {
                                           );
                                         }),
                                       );
-                                      print(
-                                          widget.noteProvider.allSearchedNotes);
+                                      print(note);
                                     },
                                     child: new Container(
                                       padding: const EdgeInsets.all(10.0),
@@ -424,8 +482,7 @@ class _SearchState extends State<Search> {
                                 ),
                               ]);
                             },
-                            itemCount:
-                                widget.noteProvider.allSearchedNotes.length,
+                            itemCount: note.length,
                           ))
                 : Center(
                     child: Text(

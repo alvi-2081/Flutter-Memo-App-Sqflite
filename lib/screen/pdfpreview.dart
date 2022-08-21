@@ -5,8 +5,8 @@ import 'package:printing/printing.dart';
 
 class PdfPreviewPage extends StatefulWidget {
   // final List<Map<String, dynamic>> notes;
-  NoteProvider noteProvider;
-  PdfPreviewPage({Key key, @required this.noteProvider}) : super(key: key);
+  List<Map<String, dynamic>> dataList;
+  PdfPreviewPage({Key key, @required this.dataList}) : super(key: key);
 
   @override
   State<PdfPreviewPage> createState() => _PdfPreviewPageState();
@@ -22,7 +22,7 @@ class _PdfPreviewPageState extends State<PdfPreviewPage> {
       body: PdfPreview(
         allowSharing: false,
         canDebug: false,
-        build: (context) => makePdf(widget.noteProvider.allNotes),
+        build: (context) => makePdf(widget.dataList),
       ),
     );
   }

@@ -28,7 +28,15 @@ Future<Uint8List> makePdf(List<Map<String, dynamic>> notes) async {
                   ),
                   Padding(
                     child: Text(
-                      'TAG : DETAILS',
+                      'TAG',
+                      style: Theme.of(context).header4,
+                      textAlign: TextAlign.center,
+                    ),
+                    padding: EdgeInsets.all(20),
+                  ),
+                  Padding(
+                    child: Text(
+                      'DETAILS',
                       style: Theme.of(context).header4,
                       textAlign: TextAlign.center,
                     ),
@@ -41,11 +49,15 @@ Future<Uint8List> makePdf(List<Map<String, dynamic>> notes) async {
                   children: [
                     Expanded(
                         child: PaddedText(
-                            "${DateFormat.yMMMd().format(DateTime.fromMillisecondsSinceEpoch(data['dateTime'] * 1000))}"),
+                            "${DateTime.fromMillisecondsSinceEpoch(data['dateTime'] * 1000).day}/${DateTime.fromMillisecondsSinceEpoch(data['dateTime'] * 1000).month}/${DateTime.fromMillisecondsSinceEpoch(data['dateTime'] * 1000).year}")
+                        // "${DateFormat.yMMMd().format(DateTime.fromMillisecondsSinceEpoch(data['dateTime'] * 1000))}"),
+                        ,
                         flex: 1),
                     Expanded(
-                        child: PaddedText(
-                            "${utf8.decode(data['tag'])} : ${utf8.decode(data['content'])}"),
+                        child: PaddedText("${utf8.decode(data['tag'])}"),
+                        flex: 1),
+                    Expanded(
+                        child: PaddedText("${utf8.decode(data['content'])}"),
                         flex: 2),
                   ],
                 )
