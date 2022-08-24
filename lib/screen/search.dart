@@ -196,6 +196,7 @@ class _SearchState extends State<Search> {
             ),
           ),
         ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
         floatingActionButton: FloatingActionButton(
           child: Icon(
             Icons.picture_as_pdf,

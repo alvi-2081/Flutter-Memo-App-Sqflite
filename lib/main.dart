@@ -36,6 +36,7 @@ class Home extends StatelessWidget {
       drawer: Consumer<NoteProvider>(
           builder: (_, noteProvider, __) =>
               MyDrawer(noteProvider: noteProvider)),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: FloatingActionButton(
         child: Icon(
           Icons.add,
